@@ -26,6 +26,17 @@ class AdminSeeder extends Seeder
             ]
         );
 
+        $adminuser = User::firstOrCreate(
+            ['email' => 'enochkoukpaki@gmail.com'], // condition pour éviter les doublons
+            [
+                'first_name' => 'Koukpaki',
+                'last_name' => 'Enoch',
+                'name' => 'Koukpaki Enoch',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ]
+        );
+
     }
     // echo $user->id;
 }

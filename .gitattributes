@@ -8,3 +8,17 @@
 
 /.github export-ignore
 CHANGELOG.md export-ignore
+
+# Détection automatique du texte (Git gère le gros du travail)
+* text=auto
+
+# Force les fichiers de code à être en LF dans le dépôt (standard Web)
+*.php text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.vue text eol=lf
+*.yaml text eol=lf
+
+# Les fichiers Windows spécifiques restent en CRLF
+*.bat text eol=crlf

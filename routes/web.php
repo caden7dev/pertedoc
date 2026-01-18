@@ -9,11 +9,9 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\PerteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AgentController;
+use App\Http\Controllers\AgentDashboardController;
 use App\Http\Controllers\Admin\UserController; 
 use App\Http\Controllers\Admin\TypePieceController;
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -83,35 +81,45 @@ Route::middleware(['auth'])->group(function () {
     
 });
 
-Route::middleware(['auth'])->group(function () {
-
-    Route::middleware('role:agent')->group(function () {
-        Route::get('/agent/dashboard', [AgentDashboardController::class, 'index'])
-            ->name('agent.dashboard');
-
-        Route::post('/agent/perte/{perte}/valider', [AgentDashboardController::class, 'valider'])
-            ->name('agent.perte.valider');
-
-        Route::post('/agent/perte/{perte}/rejeter', [AgentDashboardController::class, 'rejeter'])
-            ->name('agent.perte.rejeter');
-    });
-
-});
-Route::middleware(['auth','admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])
-        ->name('admin.dashboard');
+/*
+|--------------------------------------------------------------------------
+| Routes Agent
+|--------------------------------------------------------------------------
+*/
+Route::prefix('agent')->name('agent.')->middleware(['auth', 'agent'])->group(function () {
+    Route::get('/dashboard', [AgentDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/perte/{perte}/valider', [AgentDashboardController::class, 'valider'])->name('perte.valider');
+    Route::post('/perte/{perte}/rejeter', [AgentDashboardController::class, 'rejeter'])->name('perte.rejeter');
+    Route::get('/perte/{perte}', [AgentDashboardController::class, 'show'])->name('perte.show');
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Routes Admin
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Dashboard admin
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    
+    // Gestion des utilisateurs
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    
+    // Gestion des types de pièces
+    Route::get('/types-pieces', [TypePieceController::class, 'index'])->name('types-pieces.index');
+    Route::get('/types-pieces/create', [TypePieceController::class, 'create'])->name('types-pieces.create');
+    Route::post('/types-pieces', [TypePieceController::class, 'store'])->name('types-pieces.store');
+    
+    // ✅ AJOUT : Gestion des rôles (page temporaire)
+    Route::get('/roles', function () {
+        return view('admin.roles.index');
+    })->name('roles.index');
 });
-
-
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/types-pieces', [TypePieceController::class, 'index'])
-        ->name('types-pieces.index');
-});
-
 
 // Routes d'authentification (login, register, logout)
 require __DIR__.'/auth.php';

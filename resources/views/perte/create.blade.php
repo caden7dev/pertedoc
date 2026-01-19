@@ -200,7 +200,7 @@
                 </div>
 
                 <div>
-                    <label>Numéro de la pièce</label>
+                    <label>Numéro de la pièce(Optionnel)</label>
                     <input type="text" name="numero_piece">
                 </div>
 
@@ -210,7 +210,7 @@
                 </div>
 
                 <div>
-                    <label>Autorité de délivrance</label>
+                    <label>Autorité de délivrance(Optionnel)</label>
                     <input type="text" name="autorite_delivrance">
                 </div>
             </div>
@@ -227,8 +227,8 @@
                 </div>
 
                 <div>
-                    <label>Lieu de la perte</label>
-                    <input type="text" name="lieu_perte" required>
+                    <label>Lieu de la perte(Optionnel)</label>
+                    <input type="text" name="lieu_perte">
                 </div>
 
                 <div class="full">

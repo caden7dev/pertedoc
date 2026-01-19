@@ -38,7 +38,7 @@ class PerteController extends Controller
 
             // Perte
             'date_perte' => 'required|date',
-            'lieu_perte' => 'required|string|max:255',
+            'lieu_perte' => 'nullable|string|max:255',
             'circonstances' => 'nullable|string',
 
             // Fichiers

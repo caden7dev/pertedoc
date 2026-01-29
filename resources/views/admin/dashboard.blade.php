@@ -3,162 +3,232 @@
 @section('title', 'Tableau de bord - Administrateur Général')
 
 @section('content')
-<div class="container-fluid">
+<style>
+    /* Style pour la sidebar fixe */
+    .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 250px;
+        background: #2c3e50;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+    
+    .admin-content {
+        margin-left: 250px;
+        min-height: 100vh;
+        background: #f8f9fa;
+    }
+    
+    /* Bouton déconnexion bien positionné */
+    .logout-section {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 250px;
+        padding: 15px;
+        background: #2c3e50;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .logout-btn {
+        width: 100%;
+        padding: 10px 15px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .logout-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+    }
+    
+    /* Padding pour éviter que le contenu passe sous le bouton logout */
+    .sidebar-nav-wrapper {
+        padding-bottom: 80px;
+    }
+    
+    /* Nav links */
+    .nav-link {
+        transition: all 0.3s;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .nav-link:hover {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .nav-link.active {
+        background: #27ae60 !important;
+    }
+</style>
 
-<div class="row">
-    {{-- SIDEBAR --}}
-    <div class="col-md-2 bg-dark text-white min-vh-100 p-3" style="position: relative;">
-        <h5 class="mb-4">🇹🇬 e-Déclaration TG</h5>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white active" href="{{ route('admin.dashboard') }}" style="background: rgba(255,255,255,0.1); border-radius: 5px;">📊 Tableau de bord</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('admin.users.index') }}">👤 Gestion des Utilisateurs</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('admin.types-pieces.index') }}">🪪 Types de Pièces</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('admin.roles.index') }}">🔐 Rôles & Droits</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="#">📈 Statistiques & Rapports</a>
-            </li>
-        </ul>
-
-        {{-- Bouton de déconnexion --}}
-        <div class="mt-auto pt-4" style="position: absolute; bottom: 20px; left: 15px; right: 15px;">
+<div class="d-flex">
+    {{-- SIDEBAR FIXE --}}
+    <div class="admin-sidebar text-white p-3">
+        <div class="sidebar-nav-wrapper">
+            <h5 class="mb-4 text-center">🇹🇬 e-Déclaration TG</h5>
+            <nav class="nav flex-column">
+                <a class="nav-link text-white active" href="{{ route('admin.dashboard') }}">
+                    📊 Tableau de bord
+                </a>
+                <a class="nav-link text-white" href="{{ route('admin.users.index') }}">
+                    👤 Gestion des Utilisateurs
+                </a>
+                <a class="nav-link text-white" href="{{ route('admin.types-pieces.index') }}">
+                    🪪 Types de Pièces
+                </a>
+                <a class="nav-link text-white" href="{{ route('admin.roles.index') }}">
+                    🔐 Rôles & Droits
+                </a>
+                <a class="nav-link text-white" href="#">
+                    📈 Statistiques & Rapports
+                </a>
+            </nav>
+        </div>
+        
+        {{-- Bouton de déconnexion fixe --}}
+        <div class="logout-section">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn btn-danger w-100" style="border-radius: 10px; font-weight: 600;">
+                <button type="submit" class="logout-btn">
                     🚪 Se déconnecter
                 </button>
             </form>
         </div>
     </div>
 
-    {{-- CONTENT --}}
-    <div class="col-md-10 p-4">
+    {{-- CONTENU PRINCIPAL --}}
+    <div class="admin-content flex-fill p-4">
+        <div class="container-fluid">
+            <h4 class="mb-4">Tableau de bord Administrateur Général</h4>
 
-        <h4 class="mb-4">Tableau de bord Administrateur Général</h4>
+            {{-- STAT CARDS --}}
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6>Utilisateurs Totaux</h6>
+                            <h3>{{ $stats['users'] }}</h3>
+                        </div>
+                    </div>
+                </div>
 
-        {{-- STAT CARDS --}}
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <h6>Utilisateurs Totaux</h6>
-                        <h3>{{ $stats['users'] }}</h3>
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6>Types de Pièces Actifs</h6>
+                            <h3>{{ $stats['types_pieces'] }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6>Rôles Définis</h6>
+                            <h3>{{ $stats['roles'] }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h6>Déclarations</h6>
+                            <h3>{{ $stats['pertes'] }}</h3>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <h6>Types de Pièces Actifs</h6>
-                        <h3>{{ $stats['types_pieces'] }}</h3>
-                    </div>
+            {{-- GESTION UTILISATEURS --}}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Derniers Utilisateurs</strong>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-primary">Voir tout</a>
                 </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <h6>Rôles Définis</h6>
-                        <h3>{{ $stats['roles'] }}</h3>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <h6>Déclarations</h6>
-                        <h3>{{ $stats['pertes'] }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- GESTION UTILISATEURS --}}
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header d-flex justify-content-between">
-                <strong>Derniers Utilisateurs</strong>
-                <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-primary">Voir tout</a>
-            </div>
-            <div class="card-body table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Rôle</th>
-                            <th>Date d'inscription</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($users as $user)
-                        <tr>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>
-                                @if($user->role === 'admin')
-                                    <span class="badge bg-danger">Admin</span>
-                                @elseif($user->role === 'agent')
-                                    <span class="badge bg-warning text-dark">Agent</span>
-                                @else
-                                    <span class="badge bg-primary">Citoyen</span>
-                                @endif
-                            </td>
-                            <td>{{ $user->created_at->format('d/m/Y') }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        {{-- TYPES DE PIÈCES --}}
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card shadow-sm">
-                    <div class="card-header">Gestion des Types de Pièces</div>
-                    <div class="card-body">
-                        @if($typesPieces->count() > 0)
-                            <table class="table">
-                                @foreach($typesPieces as $type)
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
                                 <tr>
-                                    <td>{{ $type->nom }}</td>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Date d'inscription</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($users as $user)
+                                <tr>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
                                     <td>
-                                        <a class="btn btn-sm btn-secondary">Éditer</a>
-                                        <a class="btn btn-sm btn-danger">Supprimer</a>
+                                        @if($user->role === 'admin')
+                                            <span class="badge bg-danger">Admin</span>
+                                        @elseif($user->role === 'agent')
+                                            <span class="badge bg-warning text-dark">Agent</span>
+                                        @else
+                                            <span class="badge bg-primary">Citoyen</span>
+                                        @endif
                                     </td>
+                                    <td>{{ $user->created_at->format('d/m/Y') }}</td>
                                 </tr>
                                 @endforeach
-                            </table>
-                        @else
-                            <p class="text-muted">Aucun type de pièce enregistré</p>
-                        @endif
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            {{-- STATISTIQUES --}}
-            <div class="col-md-6">
-                <div class="card shadow-sm">
-                    <div class="card-header">Statistiques d'Utilisation</div>
-                    <div class="card-body">
-                        <canvas id="statsChart"></canvas>
+            {{-- TYPES DE PIÈCES ET STATS --}}
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header">Gestion des Types de Pièces</div>
+                        <div class="card-body">
+                            @if($typesPieces->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        @foreach($typesPieces as $type)
+                                        <tr>
+                                            <td>{{ $type->nom }}</td>
+                                            <td class="text-end">
+                                                <button class="btn btn-sm btn-secondary">Éditer</button>
+                                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            @else
+                                <p class="text-muted">Aucun type de pièce enregistré</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- STATISTIQUES --}}
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header">Statistiques d'Utilisation</div>
+                        <div class="card-body">
+                            <canvas id="statsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-</div>
-
 </div>
 
 {{-- Chart JS --}}

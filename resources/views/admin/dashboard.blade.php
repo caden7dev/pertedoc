@@ -7,11 +7,11 @@
 
 <div class="row">
     {{-- SIDEBAR --}}
-    <div class="col-md-2 bg-dark text-white min-vh-100 p-3">
+    <div class="col-md-2 bg-dark text-white min-vh-100 p-3" style="position: relative;">
         <h5 class="mb-4">🇹🇬 e-Déclaration TG</h5>
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
-                <a class="nav-link text-white" href="{{ route('admin.dashboard') }}">📊 Tableau de bord</a>
+                <a class="nav-link text-white active" href="{{ route('admin.dashboard') }}" style="background: rgba(255,255,255,0.1); border-radius: 5px;">📊 Tableau de bord</a>
             </li>
             <li class="nav-item mb-2">
                 <a class="nav-link text-white" href="{{ route('admin.users.index') }}">👤 Gestion des Utilisateurs</a>
@@ -26,6 +26,16 @@
                 <a class="nav-link text-white" href="#">📈 Statistiques & Rapports</a>
             </li>
         </ul>
+
+        {{-- Bouton de déconnexion --}}
+        <div class="mt-auto pt-4" style="position: absolute; bottom: 20px; left: 15px; right: 15px;">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-danger w-100" style="border-radius: 10px; font-weight: 600;">
+                    🚪 Se déconnecter
+                </button>
+            </form>
+        </div>
     </div>
 
     {{-- CONTENT --}}
@@ -75,8 +85,8 @@
         {{-- GESTION UTILISATEURS --}}
         <div class="card mb-4 shadow-sm">
             <div class="card-header d-flex justify-content-between">
-                <strong>Gestion des Utilisateurs</strong>
-                <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-primary">Ajouter</a>
+                <strong>Derniers Utilisateurs</strong>
+                <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-primary">Voir tout</a>
             </div>
             <div class="card-body table-responsive">
                 <table class="table">
@@ -85,7 +95,7 @@
                             <th>Nom</th>
                             <th>Email</th>
                             <th>Rôle</th>
-                            <th>Action</th>
+                            <th>Date d'inscription</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,11 +103,16 @@
                         <tr>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
-                            <td>{{ ucfirst($user->role) }}</td>
                             <td>
-                                <a class="btn btn-sm btn-warning">Modifier</a>
-                                <a class="btn btn-sm btn-danger">Supprimer</a>
+                                @if($user->role === 'admin')
+                                    <span class="badge bg-danger">Admin</span>
+                                @elseif($user->role === 'agent')
+                                    <span class="badge bg-warning text-dark">Agent</span>
+                                @else
+                                    <span class="badge bg-primary">Citoyen</span>
+                                @endif
                             </td>
+                            <td>{{ $user->created_at->format('d/m/Y') }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -111,17 +126,21 @@
                 <div class="card shadow-sm">
                     <div class="card-header">Gestion des Types de Pièces</div>
                     <div class="card-body">
-                        <table class="table">
-                            @foreach($typesPieces as $type)
-                            <tr>
-                                <td>{{ $type->nom }}</td>
-                                <td>
-                                    <a class="btn btn-sm btn-secondary">Éditer</a>
-                                    <a class="btn btn-sm btn-danger">Supprimer</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </table>
+                        @if($typesPieces->count() > 0)
+                            <table class="table">
+                                @foreach($typesPieces as $type)
+                                <tr>
+                                    <td>{{ $type->nom }}</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-secondary">Éditer</a>
+                                        <a class="btn btn-sm btn-danger">Supprimer</a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </table>
+                        @else
+                            <p class="text-muted">Aucun type de pièce enregistré</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -129,7 +148,7 @@
             {{-- STATISTIQUES --}}
             <div class="col-md-6">
                 <div class="card shadow-sm">
-                    <div class="card-header">Statistiques d’Utilisation</div>
+                    <div class="card-header">Statistiques d'Utilisation</div>
                     <div class="card-body">
                         <canvas id="statsChart"></canvas>
                     </div>
@@ -151,8 +170,20 @@ new Chart(document.getElementById('statsChart'), {
         labels: {!! json_encode($chart['labels']) !!},
         datasets: [{
             label: 'Déclarations',
-            data: {!! json_encode($chart['data']) !!}
+            data: {!! json_encode($chart['data']) !!},
+            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+            borderColor: 'rgba(39, 174, 96, 1)',
+            borderWidth: 1
         }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
     }
 });
 </script>

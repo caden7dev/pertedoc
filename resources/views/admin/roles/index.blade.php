@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="row">
         {{-- SIDEBAR --}}
-        <div class="col-md-2 bg-dark text-white min-vh-100 p-3">
+        <div class="col-md-2 bg-dark text-white min-vh-100 p-3" style="position: relative;">
             <h5 class="mb-4">🇹🇬 e-Déclaration TG</h5>
             <ul class="nav flex-column">
                 <li class="nav-item mb-2">
@@ -25,6 +25,16 @@
                     <a class="nav-link text-white" href="#">📈 Statistiques & Rapports</a>
                 </li>
             </ul>
+
+            {{-- Bouton de déconnexion --}}
+            <div class="mt-auto pt-4" style="position: absolute; bottom: 20px; left: 15px; right: 15px;">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-danger w-100" style="border-radius: 10px; font-weight: 600;">
+                        🚪 Se déconnecter
+                    </button>
+                </form>
+            </div>
         </div>
 
         {{-- CONTENT --}}
@@ -60,7 +70,7 @@
                                 <td>{{ \App\Models\User::where('role', 'admin')->count() }}</td>
                             </tr>
                             <tr>
-                                <td><span class="badge bg-warning">Agent</span></td>
+                                <td><span class="badge bg-warning text-dark">Agent</span></td>
                                 <td>Agent administratif</td>
                                 <td>
                                     <small>

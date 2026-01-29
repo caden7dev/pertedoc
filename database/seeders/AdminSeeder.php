@@ -42,10 +42,10 @@ class AdminSeeder extends Seeder
                 'name' => 'Amegnran Martin',
             ],
             [
-                'email' => 'admin5@exemple.com',
-                'first_name' => 'Lucas',
-                'last_name' => 'Martin',
-                'name' => 'Lucas Martin',
+                'email' => 'tamakamarcel@gmail.com',
+                'first_name' => 'Marcel',
+                'last_name' => 'Tamaka',
+                'name' => 'Tamaka Marcel',
             ],
         ];
 

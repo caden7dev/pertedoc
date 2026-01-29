@@ -102,7 +102,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Dashboard admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // Gestion des utilisateurs
+    // Gestion des utilisateurs - COMPLÈTES
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -110,12 +110,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     
-    // Gestion des types de pièces
+    // Types de pièces
     Route::get('/types-pieces', [TypePieceController::class, 'index'])->name('types-pieces.index');
-    Route::get('/types-pieces/create', [TypePieceController::class, 'create'])->name('types-pieces.create');
-    Route::post('/types-pieces', [TypePieceController::class, 'store'])->name('types-pieces.store');
     
-    // ✅ AJOUT : Gestion des rôles (page temporaire)
+    // Rôles
     Route::get('/roles', function () {
         return view('admin.roles.index');
     })->name('roles.index');

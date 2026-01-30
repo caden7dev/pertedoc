@@ -175,7 +175,7 @@
                     </div>
 
                     <div class="mt-4 alert alert-info">
-                        <strong>ℹ️ Information :</strong> La gestion avancée des permissions sera disponible dans une prochaine version.
+                        <strong>ℹ️ Information :</strong> La gestion avancée des permissions sera disponible dans une prochaine ok version.
                     </div>
                 </div>
             </div>

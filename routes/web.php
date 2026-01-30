@@ -12,6 +12,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentDashboardController;
 use App\Http\Controllers\Admin\UserController; 
 use App\Http\Controllers\Admin\TypePieceController;
+use App\Http\Controllers\Admin\StatisticsController;
+use App\Http\Controllers\Admin\PerteController as AdminPerteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,6 +103,7 @@ Route::prefix('agent')->name('agent.')->middleware(['auth', 'agent'])->group(fun
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard admin
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::resource('users', UserController::class);
     
     // Gestion des utilisateurs - COMPLÈTES
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -112,6 +115,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Types de pièces
     Route::get('/types-pieces', [TypePieceController::class, 'index'])->name('types-pieces.index');
+    Route::resource('types-pieces', TypePieceController::class);
+
+    // Routes des statistiques
+    Route::get('/statistiques', [StatisticsController::class, 'index'])->name('stats.index');
     
     // Rôles
     Route::get('/roles', function () {

@@ -9,52 +9,142 @@ class Perte extends Model
 {
     use HasFactory;
 
-    protected $table = 'pertes'; // Nom de la table
+    /**
+     * Nom de la table
+     */
+    protected $table = 'pertes';
 
-    // Champs pouvant être remplis via Mass Assignment
+    /**
+     * Les attributs qui peuvent être assignés en masse
+     */
     protected $fillable = [
         'user_id',
-        'last_name',
-        'first_name',
-        'contact',
-        'email',
-        'type_piece',
+        'type_piece_id',
         'numero_piece',
-        'date_delivrance',
-        'autorite_delivrance',
         'date_perte',
         'lieu_perte',
-        'circonstances',
-        'copie_piece',
-        'declaration_vol',
-        'document_complementaire',
-        'statut', // si tu veux gérer "en attente"/"validée"
-        'date_declaration',
-        'date_traitement',
+        'description',
+        'statut',
+        'motif_rejet',
+        'numero_declaration',
+        'validated_at',
+        'validated_by',
     ];
 
-    // Gestion automatique des dates
-    protected $dates = [
-        'date_perte',
-        'date_delivrance',
-        'date_declaration',
-        'date_traitement',
-        'created_at',
-        'updated_at',
+    /**
+     * Les attributs qui doivent être castés
+     */
+    protected $casts = [
+        'date_perte' => 'date',
+        'validated_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    // Valeurs par défaut
-    protected $attributes = [
-        'statut' => 'en attente',
-        'date_declaration' => null,
-        'date_traitement' => null,
-    ];
+    /**
+     * Statuts possibles
+     */
+    const STATUT_EN_ATTENTE = 'en_attente';
+    const STATUT_VALIDEE = 'validee';
+    const STATUT_REJETEE = 'rejetee';
 
-    // Pour remplir automatiquement date_declaration à la création
-    protected static function booted()
+    /**
+     * Relation avec l'utilisateur
+     */
+    public function user()
     {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relation avec le type de pièce
+     */
+    public function typePiece()
+    {
+        return $this->belongsTo(TypePiece::class);
+    }
+
+    /**
+     * Relation avec l'agent validateur
+     */
+    public function validator()
+    {
+        return $this->belongsTo(User::class, 'validated_by');
+    }
+
+    /**
+     * Scope pour les déclarations en attente
+     */
+    public function scopeEnAttente($query)
+    {
+        return $query->where('statut', self::STATUT_EN_ATTENTE);
+    }
+
+    /**
+     * Scope pour les déclarations validées
+     */
+    public function scopeValidees($query)
+    {
+        return $query->where('statut', self::STATUT_VALIDEE);
+    }
+
+    /**
+     * Scope pour les déclarations rejetées
+     */
+    public function scopeRejetees($query)
+    {
+        return $query->where('statut', self::STATUT_REJETEE);
+    }
+
+    /**
+     * Accesseur pour le badge de statut
+     */
+    public function getStatutBadgeAttribute()
+    {
+        $badges = [
+            'en_attente' => '<span class="badge bg-warning">En Attente</span>',
+            'validee' => '<span class="badge bg-success">Validée</span>',
+            'rejetee' => '<span class="badge bg-danger">Rejetée</span>',
+        ];
+
+        return $badges[$this->statut] ?? '';
+    }
+
+    /**
+     * Accesseur pour le statut en français
+     */
+    public function getStatutTextAttribute()
+    {
+        $statuts = [
+            'en_attente' => 'En Attente',
+            'validee' => 'Validée',
+            'rejetee' => 'Rejetée',
+        ];
+
+        return $statuts[$this->statut] ?? $this->statut;
+    }
+
+    /**
+     * Générer un numéro de déclaration unique
+     */
+    public static function generateNumeroDeclaration()
+    {
+        $year = now()->year;
+        $count = self::whereYear('created_at', $year)->count() + 1;
+        return sprintf('DECL-%04d-%05d', $year, $count);
+    }
+
+    /**
+     * Boot method pour générer automatiquement le numéro
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
         static::creating(function ($perte) {
-            $perte->date_declaration = now();
+            if (empty($perte->numero_declaration)) {
+                $perte->numero_declaration = self::generateNumeroDeclaration();
+            }
         });
     }
 }
